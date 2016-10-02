@@ -1,0 +1,48 @@
+apply plugin: 'com.android.application'
+
+repositories {
+    jcenter()
+    maven { url "https://jitpack.io" }
+}
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
+    defaultConfig {
+        applicationId "com.fivetrue.fivetrueandroid"
+        minSdkVersion 17
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    //GOOGLE Library UI
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:design:24.2.0'
+    compile 'com.android.support:preference-v7:24.2.0'
+
+    //GOOGLE Library SERVICE
+    compile 'com.google.android.gms:play-services-places:9.4.0'
+    compile 'com.google.android.gms:play-services-auth:9.4.0'
+    compile "com.google.android.gms:play-services-gcm:9.4.0"
+    compile 'com.google.firebase:firebase-storage:9.4.0'
+    compile 'com.google.firebase:firebase-auth:9.4.0'
+
+    //OPEN SOURCE Library
+    compile 'com.mcxiaoke.volley:library:1.0.19'
+    compile 'com.theartofdev.edmodo:android-image-cropper:2.3.+'
+    compile 'com.github.chrisbanes:PhotoView:1.2.6'
+
+
+}
