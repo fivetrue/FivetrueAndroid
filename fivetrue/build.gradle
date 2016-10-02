@@ -22,7 +22,6 @@ dependencies {
     //GOOGLE Library UI
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.0'
-    compile 'com.android.support:preference-v7:24.2.0'
 
     //GOOGLE Library SERVICE
     compile 'com.google.android.gms:play-services-places:9.4.0'
