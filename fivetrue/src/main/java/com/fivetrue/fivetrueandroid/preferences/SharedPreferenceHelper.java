@@ -12,7 +12,7 @@ public class SharedPreferenceHelper {
 
     public SharedPreferences prefs;
 
-    protected SharedPreferenceHelper(Context context, String name) {
+    public SharedPreferenceHelper(Context context, String name) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             prefs = context.getSharedPreferences(name, Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS);
         } else {

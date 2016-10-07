@@ -15,6 +15,8 @@ import java.lang.reflect.Type;
  */
 public class BaseApiResponse<DATA> {
 
+    public static final int RETRY_COUNT = 3;
+
     public interface OnResponseListener<DATA>{
         void onResponse(BaseApiResponse<DATA> response);
         void onError(VolleyError error);

@@ -11,6 +11,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.fivetrue.fivetrueandroid.BuildConfig;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -80,10 +81,10 @@ public class NetworkManager {
         Request request = null;
         if(baseApiRequest != null){
             Cache.Entry entry = mNetworkCache.get(baseApiRequest.getUrl());
-            Log.d(TAG, "requestPost " + baseApiRequest.toString());
+            if(BuildConfig.DEBUG) Log.d(TAG, "requestPost " + baseApiRequest.toString());
 
             if(baseApiRequest.isCache() && entry != null && !entry.isExpired()){
-                Log.d(TAG, "api cached : " + entry);
+                if(BuildConfig.DEBUG) Log.d(TAG, "api cached : " + entry);
                 try {
                     BaseApiResponse apiResponse = baseApiRequest.getResponse();
                     if(apiResponse != null){
@@ -127,7 +128,7 @@ public class NetworkManager {
                             @Override
                             public void onErrorResponse(VolleyError error) {
                                 // TODO Auto-generated method stub
-                                Log.d(TAG, "error => " + error.toString());
+                                if(BuildConfig.DEBUG) Log.d(TAG, "error => " + error.toString());
                                 BaseApiResponse apiResponse = baseApiRequest.getResponse();
                                 if(apiResponse != null){
                                     apiResponse.setError(error);
@@ -153,7 +154,7 @@ public class NetworkManager {
     private Request requestGet(final BaseApiRequest baseApiRequest){
         Request request = null;
         if(baseApiRequest != null){
-            Log.d(TAG, "requestPost " + baseApiRequest.toString());
+            if(BuildConfig.DEBUG) Log.d(TAG, "requestPost " + baseApiRequest.toString());
             request = new StringRequest(baseApiRequest.getMethod(), baseApiRequest.getUrl(),
                     new Response.Listener<String>()
                     {
@@ -174,7 +175,7 @@ public class NetworkManager {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             // TODO Auto-generated method stub
-                            Log.d(TAG,"error => "+error.toString());
+                            if(BuildConfig.DEBUG) Log.d(TAG,"error => "+error.toString());
                             BaseApiResponse apiResponse = baseApiRequest.getResponse();
                             if(apiResponse != null){
                                 apiResponse.setError(error);
