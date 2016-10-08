@@ -21,8 +21,8 @@ public abstract class BaseRecyclerAdapter<T, H extends RecyclerView.ViewHolder> 
 
     protected static final int INVALID_VALUE = -1;
 
-    public interface OnItemClickListener<T>{
-        void onClick(View view, T data);
+    public interface OnItemClickListener<T, H extends RecyclerView.ViewHolder>{
+        void onClickItem(H holder, T data);
     }
 
 
@@ -34,7 +34,7 @@ public abstract class BaseRecyclerAdapter<T, H extends RecyclerView.ViewHolder> 
 
     private int mResourceId = INVALID_VALUE;
 
-    private OnItemClickListener<T> mOnItemClickListener = null;
+    private OnItemClickListener<T, H> mOnItemClickListener = null;
 
     public BaseRecyclerAdapter(List<T> data, int resouceId){
         mData = data;
@@ -146,19 +146,19 @@ public abstract class BaseRecyclerAdapter<T, H extends RecyclerView.ViewHolder> 
         return mData.size();
     }
 
-    public void setOnItemClickListener(OnItemClickListener<T> ll){
+    public void setOnItemClickListener(OnItemClickListener<T, H> ll){
         mOnItemClickListener = ll;
     }
 
-    protected void onClickItem(View view, T item){
+    protected void onClickItem(H holder, T item){
         if(mOnItemClickListener != null){
-            mOnItemClickListener.onClick(view, item);
+            mOnItemClickListener.onClickItem(holder, item);
         }
     }
 
-    protected void onClickItem(View view, int position){
+    protected void onClickItem(H holder, int position){
         if(getData() != null && getData().size() > position){
-            onClickItem(view, getItem(position));
+            onClickItem(holder, getItem(position));
         }
     }
 }

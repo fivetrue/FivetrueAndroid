@@ -7,9 +7,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.fivetrue.fivetrueandroid.ui.diaglog.LoadingDialog;
 import com.fivetrue.fivetrueandroid.ui.fragment.BaseFragmentImp;
+import com.fivetrue.fivetrueandroid.utils.SimpleViewUtils;
 
 
 /**
@@ -24,7 +26,6 @@ abstract public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     protected boolean popFragment(FragmentManager fm){
@@ -70,7 +71,21 @@ abstract public class BaseActivity extends AppCompatActivity {
         if(popFragment(getCurrentFragmentManager())){
             return;
         }
-        super.onBackPressed();
+        if(transitionModeWhenFinish()){
+            SimpleViewUtils.hideView(getWindow().getDecorView(), View.INVISIBLE, new SimpleViewUtils.SimpleAnimationStatusListener() {
+                @Override
+                public void onStart() {
+
+                }
+
+                @Override
+                public void onEnd() {
+                    supportFinishAfterTransition();
+                }
+            });
+        }else{
+            super.onBackPressed();
+        }
     }
 
     protected FragmentManager getCurrentFragmentManager(){
@@ -96,6 +111,12 @@ abstract public class BaseActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        switch (item.getItemId()){
+            case android.R.id.home :
+                if(getCurrentFragmentManager().getBackStackEntryCount() > 0){
+                    onBackPressed();
+                }
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -120,6 +141,10 @@ abstract public class BaseActivity extends AppCompatActivity {
         if(mLoadingDialog != null && mLoadingDialog.isShowing()){
             mLoadingDialog.dismiss();
         }
+    }
+
+    protected boolean transitionModeWhenFinish(){
+        return false;
     }
 }
 

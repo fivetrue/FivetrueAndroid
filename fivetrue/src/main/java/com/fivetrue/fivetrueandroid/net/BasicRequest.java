@@ -5,14 +5,9 @@ import android.util.Log;
 
 
 import com.android.volley.VolleyError;
-import com.fivetrue.fivetrueandroid.R;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-
-/**
- * Created by kwonojin on 16. 3. 17..
- */
 
 /**
  * Created by kwonojin on 16. 3. 17..
@@ -36,7 +31,7 @@ public abstract class BasicRequest<T> extends BaseApiRequest {
         setResponse(baseApiResponse);
         mOnResponseListener = responseListener;
         getHeaders().put(KEY_APP_ID, getContext().getPackageName());
-        getHeaders().put(KEY_APP_KEY, getContext().getString(R.string.fivetrue_app_key));
+        getHeaders().put(KEY_APP_KEY, "com.fivetrue");
     }
 
     private BaseApiResponse<T> baseApiResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<T>() {
@@ -60,6 +55,28 @@ public abstract class BasicRequest<T> extends BaseApiRequest {
 
     public void setCount(int count){
         putParam(COUNT, count + "");
+    }
+
+    public int getCount(){
+        return convertInteger(getParams().get(COUNT));
+    }
+
+    public int getPage(){
+        return convertInteger(getParams().get(PAGE));
+    }
+
+    private int convertInteger(String string){
+        int count = 0;
+        if(string != null){
+            try{
+                count = Integer.parseInt(string.trim());
+            }catch (NumberFormatException e){
+                Log.w(TAG, "Can not convert String to Integer: ", e);
+            }
+        }else{
+            Log.d(TAG, "convertInteger: string is null");
+        }
+        return count;
     }
 
     public void setPage(int page){
