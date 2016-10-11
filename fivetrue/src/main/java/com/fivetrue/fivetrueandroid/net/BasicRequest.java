@@ -1,6 +1,8 @@
 package com.fivetrue.fivetrueandroid.net;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
 
@@ -22,6 +24,7 @@ public abstract class BasicRequest<T> extends BaseApiRequest {
     private static final String PAGE = "page";
     private static final String COUNT = "count";
     private static final String ORDER = "order";
+    private static final String VERSION = "version";
 
     private BaseApiResponse.OnResponseListener<T> mOnResponseListener = null;
 
@@ -32,6 +35,15 @@ public abstract class BasicRequest<T> extends BaseApiRequest {
         mOnResponseListener = responseListener;
         getHeaders().put(KEY_APP_ID, getContext().getPackageName());
         getHeaders().put(KEY_APP_KEY, "com.fivetrue");
+        if(context != null){
+            PackageInfo pInfo = null;
+            try {
+                pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+            getHeaders().put(VERSION, pInfo.versionCode + "");
+        }
     }
 
     private BaseApiResponse<T> baseApiResponse = new BaseApiResponse<>(new BaseApiResponse.OnResponseListener<T>() {

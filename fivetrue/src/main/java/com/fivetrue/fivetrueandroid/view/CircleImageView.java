@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.fivetrue.fivetrueandroid.image.ImageLoadManager;
+import com.fivetrue.fivetrueandroid.utils.SimpleViewUtils;
 
 /**
  * Created by kwonojin on 16. 6. 14..
@@ -20,6 +21,8 @@ import com.fivetrue.fivetrueandroid.image.ImageLoadManager;
 public class CircleImageView extends ImageView {
 
     private static final String TAG = "CircleImageView";
+
+    private boolean mShowingAnimation = true;
     public CircleImageView(Context context) {
         super(context);
     }
@@ -57,7 +60,7 @@ public class CircleImageView extends ImageView {
                         canvas.drawBitmap(response.getBitmap(), 0, 0, null);
                         response.getBitmap().recycle();
 
-                        Bitmap output = Bitmap.createBitmap(temp.getWidth(),
+                        final Bitmap output = Bitmap.createBitmap(temp.getWidth(),
                                 temp.getHeight(), Bitmap.Config.ARGB_8888);
 
                         Canvas dest = new Canvas(output);
@@ -71,7 +74,19 @@ public class CircleImageView extends ImageView {
                         paint.setAntiAlias(true);
                         dest.drawPath(oval, paint);
                         ImageLoadManager.getInstance().putBitmapToCache(url + ":circle", output);
-                        setImageBitmap(output);
+                        if(mShowingAnimation){
+                            SimpleViewUtils.showView(CircleImageView.this, VISIBLE, new SimpleViewUtils.SimpleAnimationStatusListener() {
+                                @Override
+                                public void onStart() {
+                                    setImageBitmap(output);
+                                }
+
+                                @Override
+                                public void onEnd() {
+
+                                }
+                            });
+                        }
                     }
                 }
 
@@ -81,6 +96,10 @@ public class CircleImageView extends ImageView {
                 }
             });
         }
+    }
+
+    public void setShowingAnimation(boolean b){
+        mShowingAnimation = b;
     }
 
 }

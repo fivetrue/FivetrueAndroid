@@ -1,6 +1,9 @@
 package com.fivetrue.fivetrueandroid.ui;
 
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -23,9 +26,14 @@ abstract public class BaseActivity extends AppCompatActivity {
 
     private LoadingDialog mLoadingDialog = null;
 
+    private int mStartX;
+    private int mStartY;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mStartX = getIntent().getIntExtra("startX", getWindow().getDecorView().getWidth() / 2);
+        mStartY = getIntent().getIntExtra("startY", getWindow().getDecorView().getHeight() / 2);
     }
 
     protected boolean popFragment(FragmentManager fm){
@@ -71,8 +79,8 @@ abstract public class BaseActivity extends AppCompatActivity {
         if(popFragment(getCurrentFragmentManager())){
             return;
         }
-        if(transitionModeWhenFinish()){
-            SimpleViewUtils.hideView(getWindow().getDecorView(), View.INVISIBLE, new SimpleViewUtils.SimpleAnimationStatusListener() {
+        if(transitionModeWhenFinish() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            SimpleViewUtils.hideView(getDecorView(), View.INVISIBLE, mStartX, mStartY, new SimpleViewUtils.SimpleAnimationStatusListener() {
                 @Override
                 public void onStart() {
 
@@ -86,6 +94,10 @@ abstract public class BaseActivity extends AppCompatActivity {
         }else{
             super.onBackPressed();
         }
+    }
+
+    protected View getDecorView(){
+        return getWindow().getDecorView();
     }
 
     protected FragmentManager getCurrentFragmentManager(){
@@ -145,6 +157,18 @@ abstract public class BaseActivity extends AppCompatActivity {
 
     protected boolean transitionModeWhenFinish(){
         return false;
+    }
+
+    protected void startActivityWithClipRevealAnimation(Intent intent, View view){
+
+        int[] location = new int[2];
+        view.getLocationInWindow(location);
+
+        intent.putExtra("startX", location[0] + view.getWidth() / 2);
+        intent.putExtra("startY", location[1] + view.getHeight() / 2);
+        startActivity(intent, ActivityOptionsCompat.makeClipRevealAnimation(view,
+                (int) view.getX(), (int) view.getY()
+                , view.getWidth(), view.getHeight() ).toBundle());
     }
 }
 

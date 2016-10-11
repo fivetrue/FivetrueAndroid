@@ -100,12 +100,16 @@ public class SimpleViewUtils {
     }
 
     public static void hideView(final View view, final int visibility, final SimpleAnimationStatusListener ll){
+        hideView(view, visibility, view.getWidth() / 2, view.getHeight() / 2, ll);
+    }
+
+    public static void hideView(final View view, final int visibility, int centerX, int centerY, final SimpleAnimationStatusListener ll){
         if(view != null){
             if(view.isShown()){
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
                     Animator anim = ViewAnimationUtils.createCircularReveal(view,
-                            view.getWidth() / 2,
-                            view.getWidth() / 2,
+                            centerX,
+                            centerY,
                             view.getWidth(),
                             0);
                     anim.addListener(new Animator.AnimatorListener() {
@@ -166,4 +170,5 @@ public class SimpleViewUtils {
             }
         }
     }
+
 }
