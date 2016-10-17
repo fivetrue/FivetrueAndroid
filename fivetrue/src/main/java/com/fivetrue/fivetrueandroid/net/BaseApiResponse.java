@@ -122,4 +122,8 @@ public class BaseApiResponse<DATA> {
         return mGson;
     }
 
+    public OnResponseListener getOnResponseListener(){
+        return mOnResponseListener;
+    }
+
 }

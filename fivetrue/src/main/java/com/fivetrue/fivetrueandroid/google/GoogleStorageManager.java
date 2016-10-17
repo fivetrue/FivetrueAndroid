@@ -32,7 +32,7 @@ public class GoogleStorageManager {
     private static final float DEFAULT_ASPECT_X = 4f;
     private static final float DEFAULT_ASPECT_Y = 3f;
     private static final float DEFAULT_ASPECT_RATIO = DEFAULT_ASPECT_X / DEFAULT_ASPECT_Y;
-    private static final float DEFAULT_CROP_IMAGE_WIDTH = 720f;
+    private static final float DEFAULT_CROP_IMAGE_WIDTH =  1080f;
     private static final float DEFAULT_CROP_IMAGE_HEIGHT = DEFAULT_CROP_IMAGE_WIDTH / DEFAULT_ASPECT_RATIO;
 
     private static final int DEFAULT_PROFILE_IMAGE_SIZE = 200;
@@ -42,10 +42,30 @@ public class GoogleStorageManager {
     private FirebaseStorage mFirebaseStorage = null;
     private StorageReference mStorageRef = null;
 
+    private float mAspectX = DEFAULT_ASPECT_X;
+    private float mAspectY = DEFAULT_ASPECT_Y;
+    private float mAspectRatio = mAspectX / mAspectY;
+    private float mImageWidth = DEFAULT_CROP_IMAGE_WIDTH;
+    private float mImageHeight = DEFAULT_CROP_IMAGE_HEIGHT;
+
     public GoogleStorageManager(Context context, String firebaseUrl){
+        this(context, firebaseUrl, 0, 0, 0, 0);
+    }
+
+    public GoogleStorageManager(Context context, String firebaseUrl, float aspectX, float aspectY, float imageSize){
+        this(context, firebaseUrl, aspectX, aspectY, imageSize, 0);
+    }
+
+    public GoogleStorageManager(Context context, String firebaseUrl, float aspectX, float aspectY
+            , float imageWidth, float imageHeight){
         mContext = context;
         mFirebaseStorage = FirebaseStorage.getInstance();
         mStorageRef = mFirebaseStorage.getReferenceFromUrl(firebaseUrl);
+        mAspectX = aspectX > 0 ? aspectX : DEFAULT_ASPECT_X;
+        mAspectY = aspectY > 0 ? aspectY : DEFAULT_ASPECT_Y;
+        mAspectRatio = mAspectX / mAspectY;
+        mImageWidth = imageWidth > 0 ? imageWidth : DEFAULT_CROP_IMAGE_WIDTH;
+        mImageHeight = imageHeight > 0 ? imageHeight : imageWidth / mAspectRatio;
     }
 
     public void uploadBitmapImage(String path, String childName, Bitmap bitmap, final OnUploadResultListener ll){
@@ -89,10 +109,16 @@ public class GoogleStorageManager {
     }
 
     public static void cropChooseDeviceImage(Activity activity, Uri uri){
+        cropChooseDeviceImage(activity, uri, (int) DEFAULT_ASPECT_X, (int) DEFAULT_ASPECT_Y
+                , (int)DEFAULT_CROP_IMAGE_WIDTH, (int)DEFAULT_CROP_IMAGE_HEIGHT);
+    }
+
+    public static void cropChooseDeviceImage(Activity activity, Uri uri
+            , int aspectX, int aspectY, int width, int height){
         CropImage.activity(uri)
                 .setGuidelines(CropImageView.Guidelines.ON)
-                .setAspectRatio((int) DEFAULT_ASPECT_X, (int) DEFAULT_ASPECT_Y)
-                .setRequestedSize((int)DEFAULT_CROP_IMAGE_WIDTH, (int)DEFAULT_CROP_IMAGE_HEIGHT)
+                .setAspectRatio(aspectX, aspectY)
+                .setRequestedSize(width, height)
                 .start(activity);
     }
 

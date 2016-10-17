@@ -35,11 +35,6 @@ public class CircleImageView extends ImageView {
         super(context, attrs, defStyle);
     }
 
-    @Override
-    public void setImageBitmap(Bitmap bm) {
-        super.setImageBitmap(bm);
-    }
-
     public void setImageUrl(final String url){
         Bitmap bm = ImageLoadManager.getInstance().getBitmapFromCache(url + ":circle");
         if(bm != null && !bm.isRecycled()){
@@ -58,7 +53,6 @@ public class CircleImageView extends ImageView {
                         canvas.clipPath(oval);
 
                         canvas.drawBitmap(response.getBitmap(), 0, 0, null);
-                        response.getBitmap().recycle();
 
                         final Bitmap output = Bitmap.createBitmap(temp.getWidth(),
                                 temp.getHeight(), Bitmap.Config.ARGB_8888);

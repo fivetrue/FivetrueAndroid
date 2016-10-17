@@ -3,6 +3,8 @@ package com.fivetrue.fivetrueandroid.net;
 import android.content.Context;
 
 import com.android.volley.Request;
+import com.android.volley.RetryPolicy;
+import com.android.volley.VolleyError;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +12,7 @@ import java.util.Map;
 /**
  * Created by kwonojin on 16. 3. 16..
  */
-public class BaseApiRequest{
+public class BaseApiRequest implements RetryPolicy{
 
     private Context mContext = null;
     private String mUrl = null;
@@ -18,6 +20,9 @@ public class BaseApiRequest{
     private Map<String, String> mHeaders = null;
     private int mRequestMethod = Request.Method.POST;
     private BaseApiResponse mResponse = null;
+
+    private int mTimeoutMills = 1000 * 5;
+    private int mRetryCount = 3;
 
     public BaseApiRequest(Context context, String url, BaseApiResponse response){
         this(context, Request.Method.POST, url, response);
@@ -89,5 +94,30 @@ public class BaseApiRequest{
                 ", mRequestMethod=" + mRequestMethod +
                 ", mResponse=" + mResponse +
                 '}';
+    }
+
+    public void setTimeoutMills(int timeoutMills) {
+        this.mTimeoutMills = timeoutMills;
+    }
+
+    public void setRetryCount(int retryCount) {
+        this.mRetryCount = retryCount;
+    }
+
+    @Override
+    public int getCurrentTimeout() {
+        return mTimeoutMills;
+    }
+
+    @Override
+    public int getCurrentRetryCount() {
+        return mRetryCount;
+    }
+
+    @Override
+    public void retry(VolleyError error) throws VolleyError {
+        if(mResponse.getOnResponseListener() != null){
+            mResponse.getOnResponseListener().onError(new VolleyError("retry " + getUrl(), error));
+        }
     }
 }

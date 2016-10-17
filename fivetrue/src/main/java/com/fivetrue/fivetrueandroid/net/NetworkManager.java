@@ -8,6 +8,7 @@ import com.android.volley.Cache;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -145,6 +146,11 @@ public class NetworkManager {
                     protected Map<String, String> getParams() throws AuthFailureError {
                         return baseApiRequest.getParams();
                     }
+
+                    @Override
+                    public RetryPolicy getRetryPolicy() {
+                        return baseApiRequest;
+                    }
                 };
             }
         }
@@ -191,6 +197,11 @@ public class NetworkManager {
                 @Override
                 protected Map<String, String> getParams() throws AuthFailureError {
                     return baseApiRequest.getParams();
+                }
+
+                @Override
+                public RetryPolicy getRetryPolicy() {
+                    return baseApiRequest;
                 }
             };
         }
