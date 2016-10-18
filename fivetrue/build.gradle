@@ -33,6 +33,7 @@ dependencies {
     compile 'com.google.firebase:firebase-core:9.6.1'
     compile 'com.google.firebase:firebase-storage:9.6.1'
     compile 'com.google.firebase:firebase-auth:9.6.1'
+    compile 'com.google.firebase:firebase-ads:9.6.1'
 
     //OPEN SOURCE Library
     compile 'com.mcxiaoke.volley:library:1.0.19'

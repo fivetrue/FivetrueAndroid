@@ -32,9 +32,7 @@ public class CustomWebViewClient extends WebViewClient {
 
     private ValueCallback<Uri> mFileCallback;
     private ValueCallback<Uri[]> mFilePathCallbacks = null;
-
     private String mUrl = null;
-
     public CustomWebViewClient(Activity activity, WebView webView, ProgressBar progressBar){
 
         this.mActivity = activity;
@@ -72,6 +70,9 @@ public class CustomWebViewClient extends WebViewClient {
             mProgressBar.setVisibility(View.GONE);
         }
         mUrl = url;
+        if(mWebView != null){
+            mWebView.scrollTo(mWebView.getWidth() / 2 , 0);
+        }
     }
 
     protected void onWebPageCommitVisible(WebView view, String url){

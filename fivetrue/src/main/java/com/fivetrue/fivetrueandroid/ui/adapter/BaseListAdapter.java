@@ -77,8 +77,12 @@ abstract public class BaseListAdapter <T, H> extends BaseAdapter implements List
     /**
      * @return 생성시 전달받은 resourceId를 전달한다
      */
-    public int getResourceId() {
+    protected int getResourceId(int position) {
         return mResourceId;
+    }
+
+    protected void setResourceId(int id){
+        mResourceId = id;
     }
 
     /**
@@ -116,13 +120,13 @@ abstract public class BaseListAdapter <T, H> extends BaseAdapter implements List
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if(convertView == null){
-            convertView = mInflater.inflate(mResourceId, null);
-            mHolder = makeHolder(convertView);
+            convertView = mInflater.inflate(getResourceId(position), null);
+            mHolder = makeHolder(convertView, position);
             convertView.setTag(mHolder);
         }else{
             mHolder = (H) convertView.getTag();
             if(mHolder == null){
-                mHolder = makeHolder(convertView);
+                mHolder = makeHolder(convertView, position);
                 convertView.setTag(mHolder);
             }
         }
@@ -159,7 +163,7 @@ abstract public class BaseListAdapter <T, H> extends BaseAdapter implements List
      * @param view getView의 convertView가 전달된다
      * @return
      */
-    protected abstract H makeHolder(View view);
+    protected abstract H makeHolder(View view, int postion);
 
     /**
      *{@link BaseListAdapter#getView(int, View, ViewGroup)}

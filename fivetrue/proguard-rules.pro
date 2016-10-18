@@ -36,7 +36,12 @@
 # Application classes that will be serialized/deserialized over Gson
 -keep class com.google.gson.examples.android.model.** { *; }
 
+-keep class com.google.firebase.** { *; }
+-keep class android.support.** { *; }
+
+
 -keep class com.fivetrue.fivetrueandroid.google.** { *; }
+-keep class import com.android.volley.** { *; }
 -keep class com.fivetrue.fivetrueandroid.net.BaseApiResponse { <fields>; }
 -keep class com.fivetrue.fivetrueandroid.net.BaseApiRequest { <fields>; }
 -keep class com.fivetrue.fivetrueandroid.utils.CustomWebViewClient { <fields>; }
