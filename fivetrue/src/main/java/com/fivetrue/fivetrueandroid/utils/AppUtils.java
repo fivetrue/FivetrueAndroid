@@ -1,5 +1,6 @@
 package com.fivetrue.fivetrueandroid.utils;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -40,11 +41,24 @@ public class AppUtils {
     public static void goAppStore(Context context, String marketUrl){
         if(context != null){
             String appPackageName = context.getPackageName();
-            try {
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(marketUrl)));
-            } catch (android.content.ActivityNotFoundException anfe) {
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
-            }
+//            try {
+//                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(marketUrl)));
+//            } catch (android.content.ActivityNotFoundException anfe) {
+//                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+//            }
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
         }
     }
+
+    public static boolean isServiceRunning(Context context, Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 }
