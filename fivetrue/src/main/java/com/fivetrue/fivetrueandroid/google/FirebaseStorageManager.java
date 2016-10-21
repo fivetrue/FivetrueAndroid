@@ -1,7 +1,6 @@
 package com.fivetrue.fivetrueandroid.google;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -9,6 +8,7 @@ import android.provider.MediaStore;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -20,12 +20,12 @@ import java.io.ByteArrayOutputStream;
 /**
  * Created by kwonojin on 16. 9. 20..
  */
-public class GoogleStorageManager {
+public class FirebaseStorageManager {
 
-    private static final String TAG = "GoogleStorageManager";
+    private static final String TAG = "FirebaseStorageManager";
 
     public interface OnUploadResultListener{
-        void onUploadSuccess(Uri url);
+        void onUploadSuccess(Uri url, String path);
         void onUploadFailed(Exception e);
     }
 
@@ -37,8 +37,6 @@ public class GoogleStorageManager {
 
     private static final int DEFAULT_PROFILE_IMAGE_SIZE = 200;
 
-    private Context mContext = null;
-
     private FirebaseStorage mFirebaseStorage = null;
     private StorageReference mStorageRef = null;
 
@@ -48,19 +46,18 @@ public class GoogleStorageManager {
     private float mImageWidth = DEFAULT_CROP_IMAGE_WIDTH;
     private float mImageHeight = DEFAULT_CROP_IMAGE_HEIGHT;
 
-    public GoogleStorageManager(Context context, String firebaseUrl){
-        this(context, firebaseUrl, 0, 0, 0, 0);
+    public FirebaseStorageManager(){
+        this(0, 0, 0, 0);
     }
 
-    public GoogleStorageManager(Context context, String firebaseUrl, float aspectX, float aspectY, float imageSize){
-        this(context, firebaseUrl, aspectX, aspectY, imageSize, 0);
+    public FirebaseStorageManager(float aspectX, float aspectY, float imageSize){
+        this(aspectX, aspectY, imageSize, 0);
     }
 
-    public GoogleStorageManager(Context context, String firebaseUrl, float aspectX, float aspectY
+    public FirebaseStorageManager(float aspectX, float aspectY
             , float imageWidth, float imageHeight){
-        mContext = context;
         mFirebaseStorage = FirebaseStorage.getInstance();
-        mStorageRef = mFirebaseStorage.getReferenceFromUrl(firebaseUrl);
+        mStorageRef = mFirebaseStorage.getReference();
         mAspectX = aspectX > 0 ? aspectX : DEFAULT_ASPECT_X;
         mAspectY = aspectY > 0 ? aspectY : DEFAULT_ASPECT_Y;
         mAspectRatio = mAspectX / mAspectY;
@@ -79,7 +76,7 @@ public class GoogleStorageManager {
         }
     }
 
-    private void uploadImageToStorage(StorageReference reference, Bitmap bitmap, final OnUploadResultListener ll){
+    private void uploadImageToStorage(final StorageReference reference, Bitmap bitmap, final OnUploadResultListener ll){
         if(reference != null && bitmap != null && !bitmap.isRecycled()){
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -95,10 +92,14 @@ public class GoogleStorageManager {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                    ll.onUploadSuccess(taskSnapshot.getDownloadUrl());
+                    ll.onUploadSuccess(taskSnapshot.getDownloadUrl(), reference.getPath());
                 }
             });
         }
+    }
+
+    public Task<Void> deleteImageFromStorage(String path){
+        return mStorageRef.child(path).delete();
     }
 
     public static void chooseDeviceImage(Activity activity, int requestCode){

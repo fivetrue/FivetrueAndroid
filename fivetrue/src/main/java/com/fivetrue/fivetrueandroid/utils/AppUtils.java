@@ -38,14 +38,9 @@ public class AppUtils {
     }
 
 
-    public static void goAppStore(Context context, String marketUrl){
+    public static void goAppStore(Context context){
         if(context != null){
             String appPackageName = context.getPackageName();
-//            try {
-//                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(marketUrl)));
-//            } catch (android.content.ActivityNotFoundException anfe) {
-//                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
-//            }
             context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
         }
     }
