@@ -5,17 +5,22 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 /**
  * Created by kwonojin on 16. 9. 20..
@@ -76,6 +81,48 @@ public class FirebaseStorageManager {
         }
     }
 
+    public void uploadFile(String path, String childName, File file, final OnUploadResultListener ll){
+        if(childName != null && file != null && file.exists() && ll != null){
+            final StorageReference fileRef = mStorageRef.child(path + childName);
+            try {
+                fileRef.putStream(new FileInputStream(file)).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(Exception exception) {
+                        ll.onUploadFailed(exception);
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        ll.onUploadSuccess(taskSnapshot.getDownloadUrl(), fileRef.getPath());
+                    }
+                });
+            } catch (FileNotFoundException e) {
+                Log.w(TAG, "uploadFile: ", e);
+            }
+        }
+    }
+
+    public void uploadHtmlText(String path, String childName, String text, final OnUploadResultListener ll){
+        if(childName != null && text != null && ll != null){
+            final StorageReference fileRef = mStorageRef.child(path + childName);
+            StorageMetadata metadata = new StorageMetadata.Builder()
+                    .setContentType("text/html")
+                    .setContentEncoding("UTF-8")
+                    .setContentLanguage("ko").build();
+            fileRef.putBytes(text.getBytes(), metadata).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(Exception exception) {
+                    ll.onUploadFailed(exception);
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    ll.onUploadSuccess(taskSnapshot.getDownloadUrl(), fileRef.getPath());
+                }
+            });
+        }
+    }
+
     private void uploadImageToStorage(final StorageReference reference, Bitmap bitmap, final OnUploadResultListener ll){
         if(reference != null && bitmap != null && !bitmap.isRecycled()){
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -98,7 +145,7 @@ public class FirebaseStorageManager {
         }
     }
 
-    public Task<Void> deleteImageFromStorage(String path){
+    public Task<Void> deleteFileFromStorage(String path){
         return mStorageRef.child(path).delete();
     }
 

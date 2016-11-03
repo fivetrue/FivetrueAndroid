@@ -26,7 +26,6 @@ public class LoadingDialog extends ProgressDialog{
         setTitle(null);
         setMessage(null);
         setIndeterminate(false);
-        setCancelable(false);
         setCanceledOnTouchOutside(false);
         setContentView(R.layout.dialog_loading);
     }

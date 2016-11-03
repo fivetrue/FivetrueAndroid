@@ -6,13 +6,18 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
+import android.webkit.JavascriptInterface;
 import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
+
+import com.fivetrue.fivetrueandroid.ui.diaglog.LoadingDialog;
 
 /**
  * Created by kwonojin on 2016. 10. 10..
@@ -27,22 +32,50 @@ public class CustomWebViewClient extends WebViewClient {
 
     private Activity mActivity;
     private WebView mWebView;
-    private ProgressBar mProgressBar;
-
+    private LoadingDialog mLoadingDialog;
 
     private ValueCallback<Uri> mFileCallback;
     private ValueCallback<Uri[]> mFilePathCallbacks = null;
     private String mUrl = null;
-    public CustomWebViewClient(Activity activity, WebView webView, ProgressBar progressBar){
+
+    private JSInterface mJsInterface;
+
+    public CustomWebViewClient(Activity activity, WebView webView){
+        this(activity, webView, null);
+    }
+
+    public CustomWebViewClient(Activity activity, WebView webView, JSInterface jsInterface){
 
         this.mActivity = activity;
         this.mWebView = webView;
-        this.mProgressBar = progressBar;
+        this.mJsInterface = jsInterface;
+        this.mLoadingDialog = new LoadingDialog(activity);
 
         mWebView.setWebViewClient(this);
         mWebView.setWebChromeClient(webChromeClient);
+        mWebView.getSettings().setPluginState(WebSettings.PluginState.ON);
+        mWebView.getSettings().setMediaPlaybackRequiresUserGesture(false);
+        mWebView.getSettings().setSupportZoom(true);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            mWebView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
+        if(jsInterface != null){
+            mWebView.getSettings().setJavaScriptEnabled(true);
+            mWebView.addJavascriptInterface(mJsInterface.getInterface(), mJsInterface.getInterfaceName());
+        }
     }
 
+    public void onStart(){
+        mWebView.onResume();
+    }
+
+    public void onStop(){
+        mWebView.onPause();
+    }
+
+    public void onDestroy(){
+        mWebView.destroy();
+    }
 
     public String getCurrentUrl(){
         return mUrl;
@@ -66,12 +99,10 @@ public class CustomWebViewClient extends WebViewClient {
     }
 
     protected void onWebPageFinished(WebView view, String url){
-        if(mProgressBar != null){
-            mProgressBar.setVisibility(View.GONE);
-        }
+        mLoadingDialog.dismiss();
         mUrl = url;
-        if(mWebView != null){
-            mWebView.scrollTo(mWebView.getWidth() / 2 , 0);
+        if(mJsInterface != null){
+            mJsInterface.onLoadedPage(view, url);
         }
     }
 
@@ -80,14 +111,12 @@ public class CustomWebViewClient extends WebViewClient {
     }
 
     protected void onPageProgressChanged(WebView view, int newProgress) {
-        if(mProgressBar != null){
-            mProgressBar.setProgress(newProgress);
-        }
     }
 
     protected void onWebPageStarted(WebView view, String url, Bitmap favicon){
-        if(mProgressBar != null) {
-            mProgressBar.setVisibility(View.VISIBLE);
+        mLoadingDialog.show();
+        if(mJsInterface != null){
+            mJsInterface.onStartPage(view, url);
         }
     }
 
@@ -197,4 +226,12 @@ public class CustomWebViewClient extends WebViewClient {
             onOpenFileChooserFromWeb(uploadMsg, acceptType, capture);
         }
     };
+
+    public interface JSInterface{
+        String getInterfaceName();
+        Object getInterface();
+
+        void onLoadedPage(WebView webView, String url);
+        void onStartPage(WebView webView, String url);
+    }
 }
